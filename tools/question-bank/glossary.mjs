@@ -107,6 +107,8 @@ export const WORDS = {
   toss: g('verbo', ['jogar', 'atirar', 'jogar fora'], 'To throw something lightly or carelessly.', 'Toss the ball to me.'),
   feel: g('verbo', ['sentir', 'sentir-se'], 'To experience an emotion or sensation.', 'I feel happy today.'),
   felt: g('verbo (feel)', ['sentiu', 'sentiu-se'], 'The past form of “feel”.', 'She felt tired after class.'),
+  being: g('verbo (be) / substantivo', ['sendo', 'ser', 'estando'], 'The -ing form of “to be”; also a living creature.', 'He is being very kind today.'),
+  born: g('verbo (bear)', ['nascido', 'nasceu'], 'Brought into life; used in “to be born”.', 'I was born in Salvador.'),
   // Lacunas frequentes do Wiktionary (sem tradução ou com sentido raro)
   ago: g('advérbio', ['atrás', 'há (tempo)'], 'Before now; in the past.', 'I moved here two years ago.'),
   recognise: g('verbo', ['reconhecer'], 'To know someone or something you have seen before (British spelling).', 'Can you recognise this song?'),

@@ -3,6 +3,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { PHRASES, WORDS, IGNORE } from './glossary.mjs';
+import { VERBS, conjugate, kinds } from './verbs.mjs';
 
 const [filtered, qfile, www] = process.argv.slice(2);
 const POS = { noun: 'substantivo', verb: 'verbo', adj: 'adjetivo', adv: 'advérbio', prep: 'preposição', conj: 'conjunção', pron: 'pronome', det: 'determinante', article: 'artigo', intj: 'interjeição', num: 'numeral', contraction: 'contração', particle: 'partícula', phrase: 'expressão', name: 'nome próprio' };
@@ -127,11 +128,45 @@ for (const [tok, n] of [...freq.entries()].sort((a, b) => b[1] - a[1])) {
   if (tok.includes('-') && tok.split('-').every(p => p.length < 2 || resolve(p.toLowerCase()) || rule(p.toLowerCase()))) continue;
   missing.push(`${tok}(${n})`);
 }
+// Verbos: a tabela revisada corrige a tradução do infinitivo e gera as formas flexionadas.
+const V = {};
+const uncovered = new Map();
+for (const [base, infs] of Object.entries(VERBS)) {
+  if (WORDS[base]) continue;
+  if (!D[base]) { const o = own(base); if (o.length) D[base] = o; else if (![...freq.keys()].some(t => t === base)) continue; else D[base] = []; }
+  const verb = D[base].find(s => s.p === 'verbo');
+  if (verb) { verb.t = infs; D[base] = [verb, ...D[base].filter(s => s !== verb)]; }
+  else D[base] = [{ p: 'verbo', t: infs }, ...D[base]].slice(0, 2);
+}
+for (const tok of freq.keys()) {
+  if (tok.includes("'")) continue;
+  const key = tok === 'I' ? 'i' : tok;
+  for (const e of entries.get(tok) || []) {
+    if (e.pos !== 'verb') continue;
+    for (const s of e.senses) {
+      if ((s.tags || []).some(t => BAD_TAG.has(t))) continue;
+      // O Wiktionary às vezes traz a base com lixo ("choose and"): fica a primeira palavra.
+      const rawBase = s.form_of?.[0]?.word;
+      const base = rawBase && (VERBS[rawBase] ? rawBase : rawBase.split(' ')[0]);
+      const infs = base && base !== tok && VERBS[base];
+      if (!infs) { if (rawBase && rawBase !== tok) uncovered.set(tok, rawBase); continue; }
+      const gloss = (s.glosses || []).join(' ');
+      const conj = infs.map(conjugate);
+      const row = V[key] ||= { l: base, f: {} };
+      if (row.l !== base) continue; // várias palavras-base: fica a primeira do Wiktionary
+      for (const k of kinds(gloss)) row.f[k] = conj.map(c => c[k]);
+    }
+  }
+  if (V[key] && !Object.keys(V[key].f).length) delete V[key];
+}
 for (const [k, v] of Object.entries(PHRASES)) D[k] = v;
 for (const [k, v] of Object.entries(D)) if (!v.some(s => s.t?.length)) noPt.push(k);
 const P = Object.keys(PHRASES);
 
-const js = 'window.DICT=' + JSON.stringify({ D, F, P }) + ';\n';
+const js = 'window.DICT=' + JSON.stringify({ D, F, P, V }) + ';\n';
+console.log('FORMAS VERBAIS', Object.keys(V).length);
+for (const w of ['heard', 'said', 'made', 'went', 'told', 'seen', 'known', 'living', 'speaks', 'polishing', 'chose', 'left', 'found', 'bought', 'put', 'married', 'became', 'gave', 'rings']) console.log(w, JSON.stringify(V[w]));
+console.log('FORMAS SEM QUADRO:', [...uncovered].filter(([t]) => !V[t]).map(([t, b]) => `${t}>${b}`).join(' '));
 writeFileSync(join(www, 'data', 'dict.js'), js);
 const total = [...freq.keys()].filter(k => !IGNORE.has(k)).length;
 console.log({ tokensUnicos: total, verbetes: Object.keys(D).length, formas: Object.keys(F).length, locucoes: P.length, kb: Math.round(js.length / 1024), semVerbete: missing.length, semTraducaoPT: noPt.length, comExemplo: Object.values(D).filter(v => v.some(s => s.e)).length });

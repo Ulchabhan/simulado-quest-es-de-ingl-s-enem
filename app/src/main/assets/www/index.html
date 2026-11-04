@@ -40,6 +40,7 @@ button{font-family:inherit}
 #sheet .pt{font-size:18px;font-weight:700}#sheet .def{margin:6px 0}#sheet .ex{margin:6px 0;font-style:italic;color:var(--muted)}
 #sheet .x{float:right;border:0;background:#EEE;border-radius:50%;width:36px;height:36px;font-size:18px}
 #sheet .lab{font-size:12px;font-weight:700;color:var(--muted)}
+#sheet .forms{background:#FFF3D6;border-radius:8px;padding:10px;margin:10px 0;font-size:16px}#sheet .forms .small{color:var(--ink)}
 </style>
 </head>
 <body>
@@ -86,8 +87,12 @@ return null}
 function senseHtml(s){return `<div class="pos">${esc(s.p||'')}</div>${s.t&&s.t.length?`<div class="pt">${esc(s.t.join(', '))}</div>`:''}${s.d?`<div class="def"><span class="lab">DEFINIÇÃO (EN)</span><br>${esc(s.d)}</div>`:''}${s.e?`<div class="ex"><span class="lab">EXEMPLO</span><br>${esc(s.e)}</div>`:''}`}
 // Em formas como "polishing" ou "walked", o sentido de verbo vem primeiro.
 function entryHtml(r,raw){const verbal=r.from&&/(ing|ed)$/i.test(raw);const ss=verbal?r.e.slice().sort((a,b)=>(/verbo/.test(b.p)?1:0)-(/verbo/.test(a.p)?1:0)):r.e;return `<h3>${esc(r.k)}</h3>${r.from&&r.from!=r.k?`<div class="small">“${esc(raw)}” é uma forma de “${esc(r.k)}”.</div>`:''}${ss.map(senseHtml).join('')}`}
+// Forma flexionada traduzida: heard -> ouviu, escutou / ouvido, escutado.
+const FORM={past:'passado (ele/ela)',part:'particípio (tem…)',ger:'gerúndio (está…)',pres:'presente (ele/ela)'};
+function formsHtml(raw){const v=(DICT.V||{})[raw.replace(/’/g,"'").toLowerCase().replace(/'s$/,'')];if(!v)return'';
+return `<div class="forms"><span class="lab">COMO VERBO: FORMA DE “${esc(v.l.toUpperCase())}”</span>${['past','part','ger','pres'].filter(k=>v.f[k]).map(k=>`<div><span class="small">${FORM[k]}:</span> <b>${esc(v.f[k].join(', '))}</b></div>`).join('')}</div>`}
 function openWord(el){document.querySelectorAll('.w.on').forEach(x=>x.classList.remove('on'));el.classList.add('on');const raw=el.textContent,r=lookup(raw);
-let body;if(r&&r.parts)body=r.parts.map(p=>entryHtml(p,raw)).join('<hr>');else if(r)body=entryHtml(r,raw);
+let body;if(r&&r.parts)body=r.parts.map(p=>entryHtml(p,raw)).join('<hr>');else if(r)body=entryHtml(r,raw).replace('</h3>',`</h3>${formsHtml(raw)}`);
 else body=`<h3>${esc(raw)}</h3><p>Sem verbete no dicionário do app. Pode ser um nome próprio ou uma palavra de outra língua: tente entender pelo contexto.</p>`;
 $('sheet').innerHTML=`<button class="x" onclick="closeSheet()" aria-label="Fechar">×</button>${body}<p class="small">Traduções possíveis, nem sempre a do texto: confira o sentido no contexto.</p>`;$('sheet').classList.add('open');$('sheet').scrollTop=0}
 function closeSheet(){$('sheet').classList.remove('open');document.querySelectorAll('.w.on').forEach(x=>x.classList.remove('on'))}

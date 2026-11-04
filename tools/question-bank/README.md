@@ -23,6 +23,7 @@ Dentro de uma pasta de dados (`<dados>`):
 ## Onde editar
 - Técnica, dica, explicação e pista de cada questão: `questions-src.mjs`.
 - Locuções e palavras escritas à mão: `glossary.mjs`.
+- Tradução dos verbos e conjugador do português: `verbs.mjs`. Verbo novo entra na tabela `VERBS`; se for irregular, também em `IRR`.
 - A letra correta de 2020–2025 vem do gabarito oficial (`keys.json`), nunca é digitada à mão.
 
 Ao adicionar questões, rode os passos 3 a 6: palavras novas precisam entrar no dicionário.

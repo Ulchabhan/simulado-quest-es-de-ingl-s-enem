@@ -76,6 +76,18 @@ check('locução mostra tradução, definição e exemplo', sheet.includes('em v
 await page.screenshot({ path: `${out}/3-dicionario.png` });
 check('back() fecha o dicionário primeiro', (await page.evaluate(() => back())) === true && !(await page.$('#sheet.open')));
 
+// Formas flexionadas trazem a tradução conjugada.
+await openQ('2022-5');
+check('heard existe no texto', await tap('heard'));
+const heard = await txt('#sheet');
+check('heard traduz no passado e no particípio', ['ouviu', 'escutou', 'ouvido', 'escutado'].every(x => heard.includes(x)), heard.slice(0, 110).replace(/\n/g, ' '));
+await page.screenshot({ path: `${out}/6-heard.png` });
+await page.evaluate(() => closeSheet());
+const conj = await page.evaluate(() => { const V = DICT.V; return { said: V.said?.f.past, made: V.made?.f.part, told: V.told?.f.past, seen: V.seen?.f.part, married: V.married?.f.past, broken: V.broken?.f.part, speaks: V.speaks?.f.pres, living: V.living?.f.ger, total: Object.keys(V).length }; });
+check('conjugações irregulares', conj.said?.[0] === 'disse' && conj.made?.[0] === 'feito' && conj.told?.includes('contou') && conj.seen?.[0] === 'visto' && conj.married?.[0] === 'casou-se' && conj.broken?.[0] === 'quebrado' && conj.speaks?.[0] === 'fala' && conj.living?.[0] === 'vivendo', JSON.stringify(conj));
+const baseFix = await page.evaluate(() => ['see', 'buy', 'throw', 'hear'].map(w => DICT.D[w]?.find(s => s.p === 'verbo')?.t?.[0]));
+check('tradução do infinitivo corrigida', baseFix.join() === 'ver,comprar,jogar,ouvir', baseFix.join());
+await openQ('2024-2');
 await tap('polishing');
 check('forma flexionada leva à palavra-base', (await txt('#sheet')).includes('polish'), (await txt('#sheet')).slice(0, 70).replace(/\n/g, ' '));
 await page.evaluate(() => closeSheet());
