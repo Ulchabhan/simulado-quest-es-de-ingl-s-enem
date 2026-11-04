@@ -15,6 +15,5 @@ Abra esta pasta no Android Studio → Build → Build APK(s). O APK fica em `app
 Abra `app/src/main/assets/www/index.html` no navegador (funciona também no celular).
 
 ## Editar conteúdo
-Questões, gabaritos, dicas e explicações ficam no início do `<script>` de `index.html` (lista `Q`).
-Imagens: `app/src/main/assets/www/img/qNN.jpg`.
-Confira os gabaritos das questões 1–7 com o gabarito oficial do Inep.
+As questões e o dicionário são gerados: não edite `www/data/*.js` à mão. Veja `tools/question-bank/README.md`.
+Imagens das questões: `app/src/main/assets/www/img/`.

@@ -12,73 +12,128 @@ header b{font-size:18px}header .bar{position:absolute;left:0;right:0;bottom:-4px
 main{padding:16px;max-width:760px;margin:auto}
 .card{background:#fff;border-radius:14px;padding:16px;margin:12px 0;box-shadow:0 1px 3px #0001}
 h1{font-size:26px;margin:8px 0}h2{font-size:20px;margin:6px 0}
+button{font-family:inherit}
 .btn{display:block;width:100%;border:0;border-radius:12px;padding:14px;font-size:17px;font-weight:700;margin:8px 0;background:var(--royal);color:#fff}
 .btn:disabled{opacity:.4}.btn.red{background:var(--red)}.btn.ghost{background:#fff;color:var(--royal);border:2px solid var(--royal)}
+.btn small{display:block;font-weight:400;font-size:13px;margin-top:2px}
 .tag{display:inline-block;background:#E4EAF6;color:var(--royal);border-radius:20px;padding:4px 12px;font-size:13px;font-weight:700}
-.q img.z{width:220%;max-width:none}.q img{width:100%;border-radius:8px;border:1px solid #ddd}
-button{font-family:inherit}
-.alts{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:12px}
-.alts button{padding:0;width:100%;font-size:20px;font-weight:800;border-radius:50%;aspect-ratio:1;border:2px solid var(--royal);background:#fff;color:var(--royal)}
-.alts button.ok{background:var(--green);border-color:var(--green);color:#fff}.alts button.bad{background:var(--red);border-color:var(--red);color:#fff}
+.q img{width:100%;border-radius:8px;border:1px solid #ddd;margin-top:10px}
+.title{font-weight:800;margin:12px 0 6px}
+.text{font-size:17px;line-height:1.55;margin-top:8px}.text p{margin:0 0 10px}.text.poem p{margin:0 0 2px}
+.w{cursor:pointer;border-radius:4px}.w.on{background:var(--gold)}
+.clue{background:#CDEBD8;border-radius:4px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.dim{opacity:.22}
+.src{font-size:12px;color:var(--muted);margin:8px 0 0;text-align:right}
+.stem{font-weight:700;margin:14px 0 8px}
+.opts{list-style:none;margin:0;padding:0}.opts button{display:flex;gap:10px;width:100%;text-align:left;background:#fff;border:2px solid #D5DCEB;border-radius:12px;padding:12px;margin:6px 0;font-size:16px;color:var(--ink)}
+.opts b{color:var(--royal)}.opts button.ok{border-color:var(--green);background:#E3F4EA}.opts button.bad{border-color:var(--red);background:#FDE6E7}
 .tip{background:#FFF3D6;border-left:5px solid #B8860B;padding:12px;border-radius:8px;margin-top:10px}
 .why{background:#E3F4EA;border-left:5px solid var(--green);padding:12px;border-radius:8px;margin-top:10px}
+.mission{background:#E4EAF6;border-left:5px solid var(--royal);padding:12px;border-radius:8px;margin-top:10px;font-size:15px}
 .row{display:flex;gap:8px}.row .btn{flex:1}
 .timer{font-variant-numeric:tabular-nums;font-weight:800}
 .small{font-size:13px;color:var(--muted)}
 .strat h2{color:var(--red)}
+#sheet{position:fixed;left:0;right:0;bottom:0;z-index:20;background:#fff;border-radius:16px 16px 0 0;box-shadow:0 -4px 20px #0004;padding:16px;max-height:62vh;overflow:auto;display:none}
+#sheet.open{display:block}#sheet h3{margin:0;font-size:22px;color:var(--navy)}
+#sheet .pos{font-size:12px;font-weight:700;color:var(--red);text-transform:uppercase;margin:12px 0 2px}
+#sheet .pt{font-size:18px;font-weight:700}#sheet .def{margin:6px 0}#sheet .ex{margin:6px 0;font-style:italic;color:var(--muted)}
+#sheet .x{float:right;border:0;background:#EEE;border-radius:50%;width:36px;height:36px;font-size:18px}
+#sheet .lab{font-size:12px;font-weight:700;color:var(--muted)}
 </style>
 </head>
 <body>
 <header><b>Simulado ENEM · Inglês</b><span class="timer" id="tm"></span><div class="bar"></div></header>
 <main id="app"></main>
+<div id="sheet" role="dialog" aria-label="Dicionário"></div>
+<script src="data/questions.js"></script>
+<script src="data/dict.js"></script>
 <script>
-const Q=[
-{n:1,y:2024,a:'A',t:'Discourse markers',tip:'Scanning: ache “instead of” na letra. O que a canção propõe fazer no lugar de quê?',why:'“Instead of” indica substituição: amar em vez de polir as bombas da guerra santa. A canção propõe uma mudança de comportamento. “Bombs” e “holy war” são as iscas das letras D e E.'},
-{n:2,y:'PPL 2019',a:'E',t:'Discourse markers',tip:'Compare os números do infográfico: o que “but” e “yet only” contrastam?',why:'“But” e “yet only” marcam contraste: 91% acham o inglês essencial, mas só 7% se sentem preparados.',chk:1},
-{n:3,y:2023,a:'B',t:'Inferência',tip:'Leia o título e o último verso: o eu lírico se sente isolado ou ligado aos outros?',why:'“No man is an island… I am involved in mankind”: ninguém vive isolado, ideia de conexão.'},
-{n:4,y:2022,a:'D',t:'Scanning',tip:'Procure frases com “Cuban” e “Miami”.',why:'“Everyone was Cuban… the Cuban community was culturally insular in Miami”: o autor destaca a integração da comunidade cubana.'},
-{n:5,y:2019,a:'B',t:'Skimming',tip:'Leia só o título e os subtítulos em negrito.',why:'Os subtítulos (Allergy Fighters, Good for the Heart…) listam benefícios dos pets para a saúde.',chk:1},
-{n:6,y:2023,a:'D',t:'Inferência',tip:'Repare na repetição “We carry…”: o que o poema enumera?',why:'A repetição reúne origens, ofícios e histórias diferentes: experiências plurais.'},
-{n:7,y:2025,a:'D',t:'Inferência',tip:'Qual é a opinião da autora sobre a função da filosofia?',why:'Para Davis, a filosofia deve tratar de problemas humanos: aproximá-la dos problemas sociais.'},
-{n:8,y:2019,a:'B',t:'If clauses',tip:'Skimming: o texto repete a mesma estrutura “If children live with…, they learn…”.',why:'A repetição da if clause mostra que as crianças aprendem com o que vivem.'},
-{n:9,y:2016,a:'D',t:'If clauses',tip:'Scanning: procure “if it remains Italian-speaking”.',why:'A universidade adota o inglês para não se isolar: “if it remains Italian-speaking it risks isolation”.'},
-{n:10,y:2021,a:'C',t:'If clauses',tip:'Leia com atenção as últimas frases do texto.',why:'A conclusão (“society is to blame… think for ourselves”) aponta a necessidade de reflexão dos fãs.'},
-{n:11,y:2024,a:'A',t:'If clauses',tip:'Scanning: o que diziam ao autor “If you want to be American…”?',why:'“If you want to be American, speak ‘American’” revela o repúdio ao sotaque espanhol.'},
-{n:12,y:2020,a:'C',t:'If clauses',tip:'Procure a fala de Ifemelu com “if”.',why:'“It’s not hard to comb if you moisturize it”: Ifemelu defende o cabelo natural, uma atitude de resistência.'},
-{n:13,y:2018,a:'E',t:'If clauses',tip:'Scanning no Texto II: ache “If… then”.',why:'O autor critica a concepção de ensino como “sit-and-get”, transmissão passiva.'},
-{n:14,y:2025,a:'E',t:'If clauses',tip:'Scanning: o que o texto diz sobre a “snowflake generation”?',why:'São jovens “so delicate they can’t handle controversial ideas”: avessos a contrariedades.'}];
+const ALL=window.QUESTIONS,DICT=window.DICT||{D:{},F:{},P:[]};
+const TEC={skimming:'Skimming',scanning:'Scanning',inferencia:'Inferência'};
+const MISSION={skimming:'Treino de skimming: leia só o que está em destaque e tente responder. Precisou de mais? Toque em “Ver texto completo”.',scanning:'Treino de scanning: leia o enunciado primeiro e vá atrás da palavra ou do dado que ele pede. Depois de responder, o app destaca o trecho-chave.',inferencia:'Treino de inferência: observe tom, repetições e escolhas de palavras. A resposta raramente está escrita com todas as letras.'};
 const S=[
 ['Enunciado primeiro','O enunciado vem em português. Leia-o antes do texto: ele diz o que procurar (tema, objetivo, sentido de uma expressão).'],
 ['Skimming','Leitura rápida para captar a ideia geral: título, imagem, fonte, data, primeira e última frase. Pergunte: sobre o que é? Que gênero é?'],
 ['Scanning','Busca de uma informação específica: nomes, números, datas, cognatos ou a palavra citada no enunciado. Volte só ao trecho que interessa.'],
 ['Inferência','Ler nas entrelinhas: o que o texto sugere sem dizer. Observe tom, conectores e escolhas de palavras.'],
 ['Pistas linguísticas','If clauses mostram condição e consequência; discourse markers (however, but, instead of, as a result…) mostram a relação entre ideias.'],
-['Elimine','Descarte alternativas que extrapolam o texto, o contradizem ou falam de outro tema.']];
-const $=id=>document.getElementById(id);let st={i:0,score:0,ans:{},t0:0},timer,view='home';
-// Chamado pelo botão Voltar do Android (MainActivity); false = sair do app.
-function back(){if(view=='home')return false;if(view=='q'&&st.i>0){go(-1);return true}home();return true}
-function save(){try{localStorage.setItem('best',Math.max(+localStorage.getItem('best')||0,st.score))}catch(e){}}
-function home(){view='home';clearInterval(timer);$('tm').textContent='';let best=0;try{best=+localStorage.getItem('best')||0}catch(e){}
-$('app').innerHTML=`<div class="card"><h1>Treine para o ENEM</h1><p>${Q.length} questões reais de inglês (ENEM 2016–2025) com dicas de skimming, scanning e inferência.</p>${best?`<p class="small">Seu melhor resultado: ${best}/${Q.length}</p>`:''}
-<button class="btn" onclick="start()">Começar simulado</button><button class="btn ghost" onclick="strat()">Estratégias de leitura</button></div>
-<p class="small">Questões: Inep/ENEM. App de apoio ao aulão de Língua Inglesa – UNEB.</p>`}
-function strat(){view='strat';$('app').innerHTML=S.map((s,k)=>`<div class="card strat"><h2>${k+1}. ${s[0]}</h2><p>${s[1]}</p></div>`).join('')+`<button class="btn" onclick="start()">Ir para o simulado</button><button class="btn ghost" onclick="home()">Voltar</button>`;scrollTo(0,0)}
-function start(){st={i:0,score:0,ans:{},t0:Date.now()};clearInterval(timer);timer=setInterval(()=>{const s=Math.floor((Date.now()-st.t0)/1000);$('tm').textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')},1000);show()}
-function hint(){$('hint').innerHTML=`<div class="tip"><b>Dica:</b> ${Q[st.i].tip}</div>`}
-function show(){view='q';const q=Q[st.i],done=st.ans[st.i];
-$('app').innerHTML=`<div class="card q"><span class="tag">Questão ${q.n} · ENEM ${q.y} · ${q.t}</span><p class="small">Toque na imagem para ampliar.</p>
-<div style="overflow:auto"><img src="img/q${String(q.n).padStart(2,'0')}.jpg" alt="Questão ${q.n}" onclick="this.classList.toggle('z')"></div>
-<div class="alts">${'ABCDE'.split('').map(l=>`<button id="b${l}" onclick="pick('${l}')" ${done?'disabled':''}>${l}</button>`).join('')}</div>
+['Elimine','Descarte alternativas que extrapolam o texto, o contradizem ou falam de outro tema.'],
+['Palavra desconhecida?','Tente deduzir pelo contexto e, depois, toque nela nos textos em inglês para ver tradução, definição e exemplo. Na prova não há dicionário: use isso para treinar.']];
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+let st={list:ALL,mode:null,i:0,score:0,ans:{},t0:0,full:false},timer,view='home';
+function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+
+// ---------- texto com palavras tocáveis ----------
+const PHRASES=(DICT.P||[]).slice().sort((a,b)=>b.length-a.length).map(p=>p.replace(/[.*+?^${}()|[\]\\]/g,'\\$&').replace(/ /g,'\\s+'));
+const TOKEN=new RegExp((PHRASES.length?'\\b(?:'+PHRASES.join('|')+')\\b|':'')+"[A-Za-zÀ-ÿ]+(?:[’'-][A-Za-zÀ-ÿ]+)*",'gi');
+function tappable(s){let out='',last=0,m;TOKEN.lastIndex=0;while((m=TOKEN.exec(s))){out+=esc(s.slice(last,m.index))+'<span class="w">'+esc(m[0])+'</span>';last=m.index+m[0].length}return out+esc(s.slice(last))}
+function withClue(par,clue,on){if(!on||!clue)return tappable(par);const i=par.indexOf(clue);return i<0?tappable(par):tappable(par.slice(0,i))+'<span class="clue">'+tappable(clue)+'</span>'+tappable(par.slice(i+clue.length))}
+// Parágrafos: no modo skimming, escurece o miolo e deixa a primeira e a última frase.
+function skimHtml(q){const ps=q.text.split('\n').filter(p=>p.trim());if(q.poem){return ps.map((p,i)=>`<p class="${i==0||i==ps.length-1?'':'dim'}">${tappable(p)}</p>`).join('')}
+const parts=ps.map(p=>p.match(/[^.!?]+[.!?]*["”]?\s*/g)||[p]);const lastP=parts.length-1,lastS=parts[lastP].length-1;
+return parts.map((ss,pi)=>'<p>'+ss.map((x,si)=>(pi==0&&si==0)||(pi==lastP&&si==lastS)?tappable(x):`<span class="dim">${tappable(x)}</span>`).join('')+'</p>').join('')}
+function textHtml(q,showClue){const clue=showClue&&q.clue;const paras=q.text.split('\n');
+// A pista pode atravessar quebras de linha: tenta cada parágrafo, senão mostra sem destaque.
+return paras.map(p=>p.trim()?`<p>${withClue(p,clue,clue&&p.includes(clue))}</p>`:'<p>&nbsp;</p>').join('')}
+
+// ---------- dicionário ----------
+function lookup(raw){let w=raw.replace(/’/g,"'").replace(/\s+/g,' ');const low=w.toLowerCase();const noS=low.replace(/'s$/,'');const tries=[low,noS,w,w.replace(/'s$/i,''),noS.charAt(0).toUpperCase()+noS.slice(1)];
+for(const t of tries){if(DICT.D[t])return{k:t,e:DICT.D[t]};const f=DICT.F[t];if(f&&DICT.D[f])return{k:f,e:DICT.D[f],from:t}}
+if(noS.includes('-')){const parts=noS.split('-').map(p=>lookup(p)).filter(Boolean);if(parts.length)return{parts}}
+return null}
+function senseHtml(s){return `<div class="pos">${esc(s.p||'')}</div>${s.t&&s.t.length?`<div class="pt">${esc(s.t.join(', '))}</div>`:''}${s.d?`<div class="def"><span class="lab">DEFINIÇÃO (EN)</span><br>${esc(s.d)}</div>`:''}${s.e?`<div class="ex"><span class="lab">EXEMPLO</span><br>${esc(s.e)}</div>`:''}`}
+// Em formas como "polishing" ou "walked", o sentido de verbo vem primeiro.
+function entryHtml(r,raw){const verbal=r.from&&/(ing|ed)$/i.test(raw);const ss=verbal?r.e.slice().sort((a,b)=>(/verbo/.test(b.p)?1:0)-(/verbo/.test(a.p)?1:0)):r.e;return `<h3>${esc(r.k)}</h3>${r.from&&r.from!=r.k?`<div class="small">“${esc(raw)}” é uma forma de “${esc(r.k)}”.</div>`:''}${ss.map(senseHtml).join('')}`}
+function openWord(el){document.querySelectorAll('.w.on').forEach(x=>x.classList.remove('on'));el.classList.add('on');const raw=el.textContent,r=lookup(raw);
+let body;if(r&&r.parts)body=r.parts.map(p=>entryHtml(p,raw)).join('<hr>');else if(r)body=entryHtml(r,raw);
+else body=`<h3>${esc(raw)}</h3><p>Sem verbete no dicionário do app. Pode ser um nome próprio ou uma palavra de outra língua: tente entender pelo contexto.</p>`;
+$('sheet').innerHTML=`<button class="x" onclick="closeSheet()" aria-label="Fechar">×</button>${body}<p class="small">Traduções possíveis, nem sempre a do texto: confira o sentido no contexto.</p>`;$('sheet').classList.add('open');$('sheet').scrollTop=0}
+function closeSheet(){$('sheet').classList.remove('open');document.querySelectorAll('.w.on').forEach(x=>x.classList.remove('on'))}
+document.addEventListener('click',e=>{const t=e.target;if(t.classList&&t.classList.contains('w'))openWord(t)});
+
+// ---------- telas ----------
+function home(){view='home';closeSheet();clearInterval(timer);$('tm').textContent='';const best=+store('best2')||0;const n=k=>ALL.filter(q=>q.tec==k).length;
+$('app').innerHTML=`<div class="card"><h1>Treine para o ENEM</h1><p>${ALL.length} questões reais de inglês com dicas de leitura. Toque em qualquer palavra dos textos em inglês para ver a tradução, a definição e um exemplo.</p>${best?`<p class="small">Seu melhor simulado completo: ${best}/${ALL.length}</p>`:''}
+<button class="btn" onclick="start()">Simulado completo<small>${ALL.length} questões embaralhadas</small></button></div>
+<div class="card"><h2>Treinar uma técnica</h2>
+<button class="btn ghost" onclick="start('skimming')">Skimming<small>${n('skimming')} questões · ideia geral</small></button>
+<button class="btn ghost" onclick="start('scanning')">Scanning<small>${n('scanning')} questões · informação específica</small></button>
+<button class="btn ghost" onclick="start('inferencia')">Inferência<small>${n('inferencia')} questões · ler nas entrelinhas</small></button></div>
+<button class="btn ghost" onclick="strat()">Estratégias de leitura</button>
+<p class="small">Questões: Inep/ENEM. Dicionário: Wiktionary (CC BY-SA 4.0), via kaikki.org, com adaptações. App de apoio ao aulão de Língua Inglesa – UNEB.</p>`;scrollTo(0,0)}
+function strat(){view='strat';closeSheet();$('app').innerHTML=S.map((s,k)=>`<div class="card strat"><h2>${k+1}. ${s[0]}</h2><p>${s[1]}</p></div>`).join('')+`<button class="btn" onclick="start()">Ir para o simulado</button><button class="btn ghost" onclick="home()">Voltar</button>`;scrollTo(0,0)}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function start(mode){st={list:shuffle(mode?ALL.filter(q=>q.tec==mode):ALL),mode:mode||null,i:0,score:0,ans:{},t0:Date.now(),full:!mode,open:{}};clearInterval(timer);$('tm').textContent='00:00';timer=setInterval(()=>{const s=Math.floor((Date.now()-st.t0)/1000);$('tm').textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')},1000);show()}
+function renderText(){const q=st.list[st.i],done=st.ans[st.i];const skim=st.mode=='skimming'&&!done&&!st.open[st.i]&&q.text;const box=$('txt');if(!box)return;
+box.className='text'+(q.poem?' poem':'');box.innerHTML=skim?skimHtml(q):textHtml(q,!!done);
+const more=$('more');if(more)more.style.display=skim?'block':'none'}
+function show(){view='q';closeSheet();const q=st.list[st.i],done=st.ans[st.i];
+$('app').innerHTML=`<div class="card q"><span class="tag">${st.i+1}/${st.list.length} · ENEM ${esc(q.y)} · ${TEC[q.tec]}${q.g?' · '+esc(q.g):''}</span>
+${st.mode&&st.i==0?`<div class="mission">${MISSION[st.mode]}</div>`:''}
+${q.fig?`<img src="img/${esc(q.fig)}" alt="Imagem da questão; o texto dela está transcrito abaixo">`:''}
+${q.title?`<div class="title">${tappable(q.title)}</div>`:''}
+<div id="txt" class="text"></div><button class="btn ghost" id="more" style="display:none" onclick="st.open[st.i]=1;renderText()">Ver texto completo</button>
+<p class="src">${esc(q.src)}</p>
+<p class="stem">${esc(q.stem)}</p>
+<ul class="opts">${q.alts.map((a,k)=>{const l='ABCDE'[k];return `<li><button id="b${l}" onclick="pick('${l}')"><b>${l}</b><span>${esc(a)}</span></button></li>`}).join('')}</ul>
 <div id="hint"></div><div id="fb"></div><button class="btn ghost" onclick="hint()">Ver dica</button></div>
-<div class="row"><button class="btn ghost" onclick="go(-1)" ${st.i?'':'disabled'}>Anterior</button><button class="btn" onclick="go(1)">${st.i==Q.length-1?'Ver resultado':'Próxima'}</button></div>`;
-if(done)mark(done);scrollTo(0,0)}
-function pick(l){if(st.ans[st.i])return;st.ans[st.i]=l;if(l==Q[st.i].a)st.score++;mark(l)}
-function mark(l){const q=Q[st.i];'ABCDE'.split('').forEach(x=>$('b'+x).disabled=true);$('b'+q.a).classList.add('ok');if(l!=q.a)$('b'+l).classList.add('bad');
-$('fb').innerHTML=`<div class="why"><b>${l==q.a?'Acertou!':'Resposta: '+q.a}</b> ${q.why}</div>`}
-function go(d){if(st.i+d>=Q.length)return result();st.i=Math.max(0,st.i+d);show()}
-function result(){view='res';clearInterval(timer);save();const m=$('tm').textContent,pct=st.score/Q.length;
-$('app').innerHTML=`<div class="card"><h1>${st.score}/${Q.length}</h1><p>Tempo: ${m||'00:00'}</p><p>${pct>=.75?'Excelente! Continue assim.':pct>=.5?'Bom resultado! Revise as dicas das questões que errou.':'Revise as estratégias e tente de novo: a prática faz diferença.'}</p>
-<p class="small">No ENEM, você tem em média 3 minutos por questão.</p><button class="btn" onclick="start()">Refazer</button><button class="btn ghost" onclick="strat()">Revisar estratégias</button><button class="btn ghost" onclick="home()">Início</button></div>`}
+<div class="row"><button class="btn ghost" onclick="go(-1)" ${st.i?'':'disabled'}>Anterior</button><button class="btn" onclick="go(1)">${st.i==st.list.length-1?'Ver resultado':'Próxima'}</button></div>`;
+renderText();if(done)mark(done);scrollTo(0,0)}
+function hint(){$('hint').innerHTML=`<div class="tip"><b>Dica:</b> ${esc(st.list[st.i].tip)}</div>`}
+function pick(l){if(st.ans[st.i])return;st.ans[st.i]=l;if(l==st.list[st.i].a)st.score++;mark(l);renderText()}
+function mark(l){const q=st.list[st.i];'ABCDE'.split('').forEach(x=>$('b'+x).disabled=true);$('b'+q.a).classList.add('ok');if(l!=q.a)$('b'+l).classList.add('bad');
+$('fb').innerHTML=`<div class="why"><b>${l==q.a?'Acertou!':'Resposta: '+q.a}</b> ${esc(q.why)}</div>`}
+function go(d){if(st.i+d>=st.list.length)return result();st.i=Math.max(0,st.i+d);show()}
+function result(){view='res';closeSheet();clearInterval(timer);const n=st.list.length,m=$('tm').textContent,pct=st.score/n,answered=Object.keys(st.ans).length;
+if(st.full)store('best2',Math.max(+store('best2')||0,st.score));
+const by={};st.list.forEach((q,i)=>{const b=by[q.tec]=by[q.tec]||{ok:0,n:0};b.n++;if(st.ans[i]==q.a)b.ok++});
+$('app').innerHTML=`<div class="card"><h1>${st.score}/${n}</h1><p>Tempo: ${m||'00:00'}${answered<n?` · ${n-answered} sem resposta`:''}</p><p>${pct>=.75?'Excelente! Continue assim.':pct>=.5?'Bom resultado! Revise as dicas das questões que errou.':'Revise as estratégias e tente de novo: a prática faz diferença.'}</p>
+${st.full?'<p>'+Object.keys(by).map(k=>`${TEC[k]}: ${by[k].ok}/${by[k].n}`).join(' · ')+'</p>':''}
+<p class="small">No ENEM, você tem em média 3 minutos por questão.</p><button class="btn" onclick="start(${st.mode?`'${st.mode}'`:''})">Refazer</button><button class="btn ghost" onclick="strat()">Revisar estratégias</button><button class="btn ghost" onclick="home()">Início</button></div>`;scrollTo(0,0)}
+// Chamado pelo botão Voltar do Android (MainActivity); false = sair do app.
+function back(){if($('sheet').classList.contains('open')){closeSheet();return true}if(view=='home')return false;if(view=='q'&&st.i>0){go(-1);return true}home();return true}
 home();
 </script>
 </body>

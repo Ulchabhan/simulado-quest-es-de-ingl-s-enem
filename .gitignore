@@ -8,3 +8,4 @@ local.properties
 # Repositório público: este arquivo cita nomes de pessoas e da escola.
 CLAUDE.md
 .claude/
+node_modules/
