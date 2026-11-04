@@ -1,0 +1,10 @@
+build/
+.gradle/
+local.properties
+*.iml
+.idea/
+*.apk
+.vscode/
+# Repositório público: este arquivo cita nomes de pessoas e da escola.
+CLAUDE.md
+.claude/
